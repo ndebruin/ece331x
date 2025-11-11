@@ -100,19 +100,11 @@ current_buffer_num = 0 # which buffer of capture are we on?
 try:
     # iterate as long as we can
     while running and current_buffer_num < num_buffers:
+        num_buffers = num_buffers + 1
         
 ############################################################################## BUFFER ITERATOR #############################################################################################################################
         current_samples = sdr.rx() # get a single buffer of samples
-        
-        
-        ####################
-        # TO:DO:
-        # detect the actual signal
-        # discard non-signal samples
-        # 
-        ####################        
-        
-        
+          
         
         if np.any(np.abs(current_samples) > signal_threshold):            
             capture = True
