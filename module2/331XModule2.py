@@ -14,15 +14,15 @@ from MagPhasePlot import MagPhasePlot
 
 # define radio configuration
 center_freq = 433.935e6 #Hz
-sample_rate= 521e3 #Msps
+sample_rate= 2e6 #Msps
 rf_bandwidth = 5e3 #Hz
 rf_gain = 60.0 #dB
 capture_duration_sec = 0.1 # copy samples over in this blocks of this amount of time
 capture_duration_total = 60.0 # total time to capture over
 num_samps=int(capture_duration_sec*sample_rate) #If duration of DTS(T) = N/fs then T*Fs = N
 num_buffers = int(capture_duration_total/capture_duration_sec)
-  
-signal_threshold = int(200) # magnitude
+
+signal_threshold = int(250) # magnitude
 
 ############################################################################## SDR OBJECT CREATION ###########################################################################################################
 
@@ -59,28 +59,30 @@ signal.signal(signal.SIGINT, handle_exit)
 ############################################################################## DISPLAY CONFIGURATION #######################################################################################################################################
 
 # create a spectrogram object from our other file
-spectrogram = RealtimeSpectrogram(
-    sample_freq = sample_rate,
-    samples_per_fft_slice = int(2**13),
-    center_freq = center_freq
-)
+# spectrogram = RealtimeSpectrogram(
+#     sample_freq = sample_rate,
+#     samples_per_fft_slice = int(2**13),
+#     center_freq = center_freq
+# )
+
+max_points = int(100000)
 
 # create a IQ scatter plot object from other file
 iq_plot = IQPlot(
-    max_points = int(sample_rate/5)
+    max_points = max_points
 )
 
 # create the magnitude/phase plots object from the other file
 mag_phase_plot = MagPhasePlot(
     sample_freq = sample_rate,
-    max_points = int(sample_rate*5)
+    max_points = max_points
 )
 
 def update(storage, buffer):
     print(buffer)
     
     # update our spectrogram
-    spectrogram.update(buffer)
+    # spectrogram.update(buffer)
             
     # update our IQ plot
     iq_plot.update(buffer)
@@ -123,7 +125,7 @@ try:
         elif(capture):
             capture = False
             
-            update(storage=all_samples, buffer=current_samples)
+            # update(storage=all_samples, buffer=current_samples)
 
 
 
