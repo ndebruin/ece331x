@@ -26,7 +26,7 @@ class RealtimeSpectrogram:
         self.history_secs = history_seconds
 
         # Derived quantities
-        self.n_time_bins = int(history_secs * sample_freq / samples_per_fft_slice)
+        self.n_time_bins = int(self.history_secs * sample_freq / samples_per_fft_slice)
 
         # Setup matplotlib figure
         self.fig, self.ax = plt.subplots()
@@ -42,7 +42,7 @@ class RealtimeSpectrogram:
         # create actual figure
         self.img = self.ax.imshow(
             self.data,
-            extent=[0, history_secs, self.freqs[0], self.freqs[-1]],
+            extent=[0, self.history_secs, self.freqs[0], self.freqs[-1]],
             aspect='auto',
             origin='lower',
             cmap='viridis',
