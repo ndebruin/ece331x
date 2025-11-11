@@ -11,6 +11,9 @@ class IQPlot:
         # Create figure and axes
         self.fig, self.ax = plt.subplots()
         self.ax.set_title("IQ Plot")
+        lim = int(500)
+        self.ax.set_xlim(-lim, lim)
+        self.ax.set_ylim(-lim, lim)
         self.ax.set_xlabel("I")
         self.ax.set_ylabel("Q")
         self.ax.grid(True, alpha=0.3)
@@ -30,6 +33,8 @@ class IQPlot:
         samples = np.asarray(samples)
         i_new = np.real(samples)
         q_new = np.imag(samples)
+        
+        # self.scatter.clear()
 
         # Keep only the most recent N samples
         n = len(i_new)
@@ -43,6 +48,7 @@ class IQPlot:
             self.q_data[-n:] = q_new
 
         # Update scatter plot data
-        self.scatter.set_offsets(np.column_stack((self.i_data, self.q_data)))
+        self.scatter.set_offsets(np.c_[self.i_data, self.q_data])
+        plt.draw()
         self.fig.canvas.draw_idle()
         self.fig.canvas.flush_events()

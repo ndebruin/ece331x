@@ -29,6 +29,7 @@ class MagPhasePlot:
         self.ax_phase.set_title("Phase over Time")
         self.ax_phase.set_xlabel("Time [s]")
         self.ax_phase.set_ylabel("Phase [Degrees]")
+        self.ax_phase.set_ylim(-200,200)
         self.line_phase = self.ax_phase.plot(self.time, self.phase_data)
         
         plt.tight_layout()
@@ -39,7 +40,7 @@ class MagPhasePlot:
         
         samples = np.asarray(samples)
         new_buffer_magnitude = np.abs(samples) # use builtins
-        new_buffer_phase = np.rad2deg(np.unwrap(np.angle(samples))) # use numpy builtins rather than doing it manually
+        new_buffer_phase = np.rad2deg(np.angle(samples)) # use numpy builtins rather than doing it manually
         
         self.ax_mag.clear()
         self.ax_phase.clear()

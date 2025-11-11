@@ -22,7 +22,7 @@ capture_duration_total = 60.0 # total time to capture over
 num_samps=int(capture_duration_sec*sample_rate) #If duration of DTS(T) = N/fs then T*Fs = N
 num_buffers = int(capture_duration_total/capture_duration_sec)
   
-signal_threshold = int(200)
+signal_threshold = int(200) # magnitude
 
 ############################################################################## SDR OBJECT CREATION ###########################################################################################################
 
@@ -67,7 +67,7 @@ spectrogram = RealtimeSpectrogram(
 
 # create a IQ scatter plot object from other file
 iq_plot = IQPlot(
-    max_points = int(sample_rate*5)
+    max_points = int(sample_rate/5)
 )
 
 # create the magnitude/phase plots object from the other file
@@ -76,9 +76,24 @@ mag_phase_plot = MagPhasePlot(
     max_points = int(sample_rate*5)
 )
 
+def update(storage, buffer):
+    print(buffer)
+    
+    # update our spectrogram
+    spectrogram.update(buffer)
+            
+    # update our IQ plot
+    iq_plot.update(buffer)
+            
+    # update our mag-phase plots
+    mag_phase_plot.update(buffer)
+            
+    # flush this buffer of samples to our file before grabbing a new buffer
+    storage = np.concatenate((storage, buffer))
+
 
 ########################################## start of buffer iterator
-
+capture = False
 current_buffer_num = 0 # which buffer of capture are we on?
 try:
     # iterate as long as we can
@@ -86,31 +101,29 @@ try:
         
 ############################################################################## BUFFER ITERATOR #############################################################################################################################
         current_samples = sdr.rx() # get a single buffer of samples
-        # print(current_samples)
+        
         
         ####################
         # TO:DO:
         # detect the actual signal
         # discard non-signal samples
         # 
-        ####################
-        
-        if np.any(np.abs(current_samples) > signal_threshold):
+        ####################        
         
         
-            # update our spectrogram
-            spectrogram.update(current_samples)
-            
-            # update our IQ plot
-            iq_plot.update(current_samples)
-            
-            # update our mag-phase plots
-            mag_phase_plot.update(current_samples)
-            
-            
-            # flush this buffer of samples to our file before grabbing a new buffer
-            all_samples = np.concatenate((all_samples, current_samples))
         
+        if np.any(np.abs(current_samples) > signal_threshold):            
+            capture = True
+            
+            update(storage=all_samples, buffer=current_samples)
+        
+        
+
+        
+        elif(capture):
+            capture = False
+            
+            update(storage=all_samples, buffer=current_samples)
 
 
 
