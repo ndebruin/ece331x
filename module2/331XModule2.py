@@ -106,14 +106,13 @@ try:
         current_samples = sdr.rx() # get a single buffer of samples
           
         
-        if np.any(np.abs(current_samples) > signal_threshold):            
+        # if any sample in the buffer is above our magnitude threshold, then let's record and display that buffer
+        if np.any(np.abs(current_samples) > signal_threshold):
             capture = True
             
             update(storage=all_samples, buffer=current_samples)
         
-        
-
-        
+        # capture an additional buffer after the signal ends to get a trailing edge
         elif(capture):
             capture = False
             
