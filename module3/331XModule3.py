@@ -15,7 +15,7 @@ from MagPhasePlot import MagPhasePlot
 # define radio configuration
 center_freq = 433.935e6 #Hz
 sample_rate= 2e6 #Msps
-rf_bandwidth = 5e3 #Hz
+rf_bandwidth = 1e4 #Hz
 rf_gain = 60.0 #dB
 capture_duration_sec = 0.1 # copy samples over in this blocks of this amount of time
 capture_duration_total = 60.0 # total time to capture over
@@ -90,7 +90,7 @@ mag_phase_plot_corrected = MagPhasePlot(
 )
 
 def update(storage, buffer):
-    print(buffer)
+    # print(buffer)
     
     # update our spectrogram
     # spectrogram.update(buffer)
@@ -99,8 +99,22 @@ def update(storage, buffer):
     iq_plot_raw.update(buffer)
     mag_phase_plot_raw.update(buffer)
             
+    # determine coarse frequency correction offset from finding the max power sample in an FFT
+    buffer_fft = np.fft.fftshift(np.fft.fft(buffer))
+    frequencies = np.fft.fftshift(np.fft.fftfreq(len(buffer), 1/int(sample_rate)))
+    peak_power_frequency_index = np.argmax(np.abs(buffer_fft))
+    coarse_frequency_offset = frequencies[peak_power_frequency_index]
     
-            
+    print(coarse_frequency_offset)
+    
+    # apply our coarse correction
+    correction_sinusoid = np.exp(-1j * 2 * np.pi * coarse_frequency_offset * (np.arange(len(buffer))*2))
+    buffer_corrected = buffer * correction_sinusoid
+    
+    # update our corrected plots
+    iq_plot_corrected.update(buffer_corrected)
+    mag_phase_plot_corrected.update(buffer_corrected)
+
     # flush this buffer of samples to our file before grabbing a new buffer
     storage = np.concatenate((storage, buffer))
 
