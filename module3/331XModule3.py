@@ -15,14 +15,14 @@ from MagPhasePlot import MagPhasePlot
 # define radio configuration
 center_freq = 433.9e6 #Hz
 sample_rate= 2e6 #Msps
-rf_bandwidth = 1e4 #Hz
+rf_bandwidth = 5e3 #Hz
 rf_gain = 60.0 #dB
 capture_duration_sec = 0.1 # copy samples over in this blocks of this amount of time
 capture_duration_total = 60.0 # total time to capture over
 num_samps=int(capture_duration_sec*sample_rate) #If duration of DTS(T) = N/fs then T*Fs = N
 num_buffers = int(capture_duration_total/capture_duration_sec)
 
-signal_threshold = int(250) # magnitude
+signal_threshold = int(50) # magnitude
 
 ############################################################################## SDR OBJECT CREATION ###########################################################################################################
 
@@ -59,11 +59,19 @@ signal.signal(signal.SIGINT, handle_exit)
 ############################################################################## DISPLAY CONFIGURATION #######################################################################################################################################
 
 # create a spectrogram object from our other file
-# spectrogram = RealtimeSpectrogram(
-#     sample_freq = sample_rate,
-#     samples_per_fft_slice = int(2**13),
-#     center_freq = center_freq
-# )
+spectrogram_raw = RealtimeSpectrogram(
+    sample_freq = sample_rate,
+    samples_per_fft_slice = int(2**13),
+    center_freq = center_freq,
+    title = "Raw Spectrogram"
+)
+
+spectrogram_corrected = RealtimeSpectrogram(
+    sample_freq = sample_rate,
+    samples_per_fft_slice = int(2**13),
+    center_freq = center_freq,
+    title = "Corrected Spectrogram"
+)
 
 max_points = int(5e4)
 
@@ -95,13 +103,11 @@ mag_phase_plot_corrected = MagPhasePlot(
 
 def update(storage, buffer):
     # print(buffer)
-    
-    # update our spectrogram
-    # spectrogram.update(buffer)
             
     # update our raw plots
     iq_plot_raw.update(buffer)
     mag_phase_plot_raw.update(buffer)
+    spectrogram_raw.update(buffer)
     
     N = len(buffer)
             
@@ -123,6 +129,7 @@ def update(storage, buffer):
     # update our corrected plots
     iq_plot_corrected.update(buffer_corrected)
     mag_phase_plot_corrected.update(buffer_corrected)
+    spectrogram_corrected.update(buffer_corrected)
 
     # flush this buffer of samples to our file before grabbing a new buffer
     storage = np.concatenate((storage, buffer))

@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class RealtimeSpectrogram:
-    def __init__(self, sample_freq, samples_per_fft_slice, center_freq, history_seconds=5):
+    def __init__(self, sample_freq, samples_per_fft_slice, center_freq, history_seconds=5, title=""):
         """
         Initialize a real-time spectrogram plot.
 
@@ -33,6 +33,8 @@ class RealtimeSpectrogram:
         self.ax.set_title("Spectrogram")
         self.ax.set_xlabel("Time [s]")
         self.ax.set_ylabel("Frequency [MHz]")
+        
+        self.fig.suptitle = title
 
         # Pre-fill spectrogram with functionally "empty" data so it has something to display
         self.freqs = np.fft.fftfreq(samples_per_fft_slice, 1/sample_freq)
@@ -49,6 +51,7 @@ class RealtimeSpectrogram:
             vmin=-120,
             vmax=0,
         )
+        
         self.cbar = plt.colorbar(self.img, ax=self.ax)
         self.cbar.set_label("Power [dB]")
         plt.tight_layout()
@@ -58,7 +61,7 @@ class RealtimeSpectrogram:
     def update(self, samples):
         """Call this with a new buffer of samples."""
         # Compute power spectrum (in dB)
-        fft_data = np.fft.fftshift(np.fft.fft(samples, self.samples_per_fft_slice))
+        fft_data = np.fft.fftshift(np.fft.fft(samples, 8192))
         power_db = 20 * np.log10(np.abs(fft_data) + 1e-6)
 
         # Shift existing data left and append new column
