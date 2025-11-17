@@ -65,7 +65,7 @@ signal.signal(signal.SIGINT, handle_exit)
 #     center_freq = center_freq
 # )
 
-max_points = int(100000)
+max_points = int(5e4)
 
 # create a IQ scatter plot object from other file
 iq_plot_raw = IQPlot(
@@ -108,7 +108,9 @@ def update(storage, buffer):
     print(coarse_frequency_offset)
     
     # apply our coarse correction
-    correction_sinusoid = np.exp(-1j * 2 * np.pi * coarse_frequency_offset * (np.arange(len(buffer))*2))
+    # create time vector
+    t = np.arange(len(buffer))/int(sample_rate)
+    correction_sinusoid = np.exp(-1j * 2 * np.pi * coarse_frequency_offset * (t*2))
     buffer_corrected = buffer * correction_sinusoid
     
     # update our corrected plots
