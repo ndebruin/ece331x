@@ -13,7 +13,7 @@ from MagPhasePlot import MagPhasePlot
 ############################################################################## RADIO CONFIGURATION ###########################################################################################################
 
 # define radio configuration
-center_freq = 433.935e6 #Hz
+center_freq = 433.9e6 #Hz
 sample_rate= 2e6 #Msps
 rf_bandwidth = 1e4 #Hz
 rf_gain = 60.0 #dB
@@ -102,19 +102,22 @@ def update(storage, buffer):
     # update our raw plots
     iq_plot_raw.update(buffer)
     mag_phase_plot_raw.update(buffer)
+    
+    N = len(buffer)
             
     # determine coarse frequency correction offset from finding the max power sample in an FFT
     buffer_fft = np.fft.fftshift(np.fft.fft(buffer))
-    frequencies = np.fft.fftshift(np.fft.fftfreq(len(buffer), 1/int(sample_rate)))
+    frequencies = np.fft.fftshift(np.fft.fftfreq(N, 1/sample_rate))
     peak_power_frequency_index = np.argmax(np.abs(buffer_fft))
     coarse_frequency_offset = frequencies[peak_power_frequency_index]
     
     print(coarse_frequency_offset)
+    # print(N)
     
     # apply our coarse correction
     # create time vector
-    t = np.arange(len(buffer))/int(sample_rate)
-    correction_sinusoid = np.exp(-1j * 2 * np.pi * coarse_frequency_offset * (t*2))
+    t = np.arange(N)/int(sample_rate)
+    correction_sinusoid = np.exp(-1j * 2 * np.pi * coarse_frequency_offset *t)
     buffer_corrected = buffer * correction_sinusoid
     
     # update our corrected plots
