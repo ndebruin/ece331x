@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 class MagPhasePlot:
-    def __init__(self, sample_freq, max_points=5000):
+    def __init__(self, sample_freq, max_points=5000, title=""):
 
         self.sample_rate = sample_freq
         self.max_points = max_points
@@ -18,6 +18,8 @@ class MagPhasePlot:
 
         # create figure objects
         self.fig, (self.ax_mag, self.ax_phase) = plt.subplots(2,1)
+        
+        self.fig.suptitle(title)
         
         # Setup magnitude figure
         self.ax_mag.set_title("Magnitude over Time")

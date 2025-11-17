@@ -69,24 +69,28 @@ max_points = int(5e4)
 
 # create a IQ scatter plot object from other file
 iq_plot_raw = IQPlot(
-    max_points = max_points
+    max_points = max_points,
+    title="Raw IQ Plot"
 )
 
 # create the magnitude/phase plots object from the other file
 mag_phase_plot_raw = MagPhasePlot(
     sample_freq = sample_rate,
-    max_points = max_points
+    max_points = max_points,
+    title="Raw Mag-Phase Plot"
 )
 
 # create a IQ scatter plot object from other file
 iq_plot_corrected = IQPlot(
-    max_points = max_points
+    max_points = max_points,
+    title="Corrected IQ Plot"
 )
 
 # create the magnitude/phase plots object from the other file
 mag_phase_plot_corrected = MagPhasePlot(
     sample_freq = sample_rate,
-    max_points = max_points
+    max_points = max_points,
+    title="Corrected Mag-Phase Plot"
 )
 
 def update(storage, buffer):

@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class IQPlot:
-    def __init__(self, max_points=5000):
+    def __init__(self, max_points=5000, title=""):
 
         self.max_points = max_points
 
@@ -17,6 +17,8 @@ class IQPlot:
         self.ax.set_xlabel("I")
         self.ax.set_ylabel("Q")
         self.ax.grid(True, alpha=0.3)
+        
+        self.fig.suptitle(title)
 
         # Pre-allocate data arrays
         self.i_data = np.zeros(max_points)
