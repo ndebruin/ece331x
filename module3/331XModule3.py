@@ -15,7 +15,7 @@ from MagPhasePlot import MagPhasePlot
 # define radio configuration
 center_freq = 433.9e6 #Hz
 sample_rate= 2e6 #Msps
-rf_bandwidth = 5e3 #Hz
+rf_bandwidth = 5e4 #Hz
 rf_gain = 60.0 #dB
 capture_duration_sec = 0.1 # copy samples over in this blocks of this amount of time
 capture_duration_total = 60.0 # total time to capture over
@@ -58,17 +58,19 @@ signal.signal(signal.SIGINT, handle_exit)
 
 ############################################################################## DISPLAY CONFIGURATION #######################################################################################################################################
 
+fft_size = 2**15
+
 # create a spectrogram object from our other file
 spectrogram_raw = RealtimeSpectrogram(
     sample_freq = sample_rate,
-    samples_per_fft_slice = int(2**13),
+    samples_per_fft_slice = int(fft_size),
     center_freq = center_freq,
     title = "Raw Spectrogram"
 )
 
 spectrogram_corrected = RealtimeSpectrogram(
     sample_freq = sample_rate,
-    samples_per_fft_slice = int(2**13),
+    samples_per_fft_slice = int(fft_size),
     center_freq = center_freq,
     title = "Corrected Spectrogram"
 )

@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class RealtimeSpectrogram:
-    def __init__(self, sample_freq, samples_per_fft_slice, center_freq, history_seconds=5, title=""):
+    def __init__(self, sample_freq, samples_per_fft_slice, center_freq, history_seconds=5, title = ""):
         """
         Initialize a real-time spectrogram plot.
 
@@ -34,12 +34,12 @@ class RealtimeSpectrogram:
         self.ax.set_xlabel("Time [s]")
         self.ax.set_ylabel("Frequency [MHz]")
         
-        self.fig.suptitle = title
+        self.fig.suptitle(title)
 
         # Pre-fill spectrogram with functionally "empty" data so it has something to display
         self.freqs = np.fft.fftfreq(samples_per_fft_slice, 1/sample_freq)
         self.freqs = np.fft.fftshift(self.freqs) / 1e6 + center_freq / 1e6
-        self.data = np.full((len(self.freqs), self.n_time_bins), -120.0)  # dB values
+        self.data = np.full((len(self.freqs), self.n_time_bins), -100.0)  # dB values
 
         # create actual figure
         self.img = self.ax.imshow(
@@ -51,7 +51,6 @@ class RealtimeSpectrogram:
             vmin=-120,
             vmax=0,
         )
-        
         self.cbar = plt.colorbar(self.img, ax=self.ax)
         self.cbar.set_label("Power [dB]")
         plt.tight_layout()
@@ -59,16 +58,33 @@ class RealtimeSpectrogram:
         plt.show(block=False)
 
     def update(self, samples):
-        """Call this with a new buffer of samples."""
-        # Compute power spectrum (in dB)
-        fft_data = np.fft.fftshift(np.fft.fft(samples, 8192))
-        power_db = 20 * np.log10(np.abs(fft_data) + 1e-6)
+        num_slices=len(samples)//self.samples_per_fft_slice #samples/(samples/num_slices)
 
-        # Shift existing data left and append new column
-        self.data = np.roll(self.data, -1, axis=1)
-        self.data[:, -1] = power_db
+        if num_slices == 0:
+            return
+
+        for i in range(num_slices):
+            sample_slice=samples[i*self.samples_per_fft_slice:(i+1)*self.samples_per_fft_slice] #i= slice number multiplies by fft size to isolate FFT size samples ex: a 1024 point FFT needs exactly 1024 samples any more and rest of data is thrown away!
+            fft_data = np.fft.fftshift(np.fft.fft(sample_slice))/self.samples_per_fft_slice #Kept this line same only divided by samples_per_fft to normalize values 
+            power_db=20*np.log10(np.abs(fft_data)+1e-6) #This line exact same 
+            self.data = np.roll(self.data, -1, axis=1)
+            self.data[:, -1] = power_db
+      
+       
 
         # Update the image
         self.img.set_data(self.data)
         self.fig.canvas.draw_idle()
         self.fig.canvas.flush_events()
+
+
+
+
+
+        
+        
+
+
+
+
+
