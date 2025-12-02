@@ -9,12 +9,13 @@ import signal
 from RealtimeSpectrogram import RealtimeSpectrogram
 from IQPlot import IQPlot
 from MagPhasePlot import MagPhasePlot
+from scipy import signal as sig
 
 ############################################################################## RADIO CONFIGURATION ###########################################################################################################
 
 # define radio configuration
 center_freq = 915.0e6 #Hz
-sample_rate= 2e6 #Msps
+sample_rate= 2e6 #samples/s
 rf_bandwidth = 1e6 #Hz
 rf_gain = 30.0 #dB
 capture_duration_sec = 0.05 # copy samples over in this blocks of this amount of time
@@ -76,7 +77,7 @@ signal.signal(signal.SIGINT, handle_exit)
 ############################################################################## DISPLAY CONFIGURATION #######################################################################################################################################
 
 
-fft_bin_size_freq = 20
+fft_bin_size_freq = 20 # Hz
 fft_size = sample_rate/fft_bin_size_freq
 
 # create a spectrogram object from our other file
@@ -96,11 +97,11 @@ spectrogram_raw = RealtimeSpectrogram(
 
 max_points = int(5e4)
 
-# # create a IQ scatter plot object from other file
-# iq_plot_raw = IQPlot(
-#     max_points = max_points,
-#     title="Raw IQ Plot"
-# )
+# create a IQ scatter plot object from other file
+iq_plot_raw = IQPlot(
+    max_points = max_points,
+    title="Raw IQ Plot"
+)
 
 # # create the magnitude/phase plots object from the other file
 # mag_phase_plot_raw = MagPhasePlot(
@@ -124,28 +125,43 @@ max_points = int(5e4)
 
 def updateGraphs(buffer):
     # print(buffer)
-            
+    
+    # apply a bandpass filter to just the signal we care about
+    # and not all the harmonics from the 99c "LN"A
+    # this bandpass filter is implemented using a LPF
+    # since in complex sampling they're the same thing,
+    # and our IQ samples have Fc = 0, so a symmetrical LPF
+    # creates a BPF around Fc.
+    filter_bandwidth = 500e3 #Hz
+    filter = sig.firwin(1000, (filter_bandwidth/2 / (sample_rate/2)), pass_zero=True, window="hamming")
+    buffer_filtered = sig.lfilter(filter, 1.0, buffer)
+    
     # update our raw plots
     # iq_plot_raw.update(buffer)
     # mag_phase_plot_raw.update(buffer)
-    spectrogram_raw.update(buffer)
+    # spectrogram_raw.update(buffer_filtered)
     
-    N = len(buffer)
-            
-    # determine coarse frequency correction offset from finding the max power sample in an FFT
-    # buffer_fft = np.fft.fftshift(np.fft.fft(buffer))
-    # frequencies = np.fft.fftshift(np.fft.fftfreq(N, 1/sample_rate))
-    # peak_power_frequency_index = np.argmax(np.abs(buffer_fft))
-    # coarse_frequency_offset = frequencies[peak_power_frequency_index]
+    N = len(buffer_filtered)   
     
-    # print(coarse_frequency_offset)
-    # # print(N)
+    # coarse frequency correction
+    # we are trying to decode BPSK, 
+    #   so we're going to square the signal to find the phase shift sinusoid
+    # per: https://pysdr.org/content/sync.html#coarse-frequency-synchronization
+    buffer_squared= buffer_filtered**2 # square the buffer to remove the effects of modulation
+    buffer_fft = np.fft.fftshift(np.abs(np.fft.fft(buffer_filtered))) # fft our buffer
+    fft_freqs = np.linspace(-filter_bandwidth/2.0, filter_bandwidth/2.0, len(buffer_fft)) # create vector of frequencies
+    coarse_freq_offset = fft_freqs[np.argmax(buffer_fft)] # find peak frequency
+    print(coarse_freq_offset) 
+    # plt.plot(f, psd)
+    # plt.show()
     
-    # # apply our coarse correction
-    # # create time vector
-    # t = np.arange(N)/int(sample_rate)
-    # correction_sinusoid = np.exp(-1j * 2 * np.pi * coarse_frequency_offset *t)
-    # buffer_corrected = buffer * correction_sinusoid
+    # apply coarse offset
+    Ts = 1/sample_rate
+    t = np.arange(0, Ts*len(buffer_filtered), Ts) # creates time vector
+    buffer_coarse_correction = buffer_filtered * np.exp(-1j*2*np.pi*coarse_freq_offset*t/2.0)
+    
+    iq_plot_raw.update(buffer_coarse_correction)
+    spectrogram_raw.update(buffer_coarse_correction)
     
     # # update our corrected plots
     # iq_plot_corrected.update(buffer_corrected)
