@@ -13,16 +13,16 @@ from MagPhasePlot import MagPhasePlot
 ############################################################################## RADIO CONFIGURATION ###########################################################################################################
 
 # define radio configuration
-center_freq = 433.9e6 #Hz
+center_freq = 915.0e6 #Hz
 sample_rate= 2e6 #Msps
-rf_bandwidth = 5e4 #Hz
-rf_gain = 60.0 #dB
+rf_bandwidth = 1e6 #Hz
+rf_gain = 30.0 #dB
 capture_duration_sec = 0.05 # copy samples over in this blocks of this amount of time
-capture_duration_total = 60.0 # total time to capture over
+capture_duration_total = 30.0 # total time to capture over
 num_samps=int(capture_duration_sec*sample_rate) #If duration of DTS(T) = N/fs then T*Fs = N
 num_buffers = int(capture_duration_total/capture_duration_sec)
 
-signal_threshold = int(50) # magnitude
+# signal_threshold = int(50) # magnitude
 
 
 # print((num_buffers*num_samps))
@@ -75,7 +75,9 @@ signal.signal(signal.SIGINT, handle_exit)
 
 ############################################################################## DISPLAY CONFIGURATION #######################################################################################################################################
 
-fft_size = 2**11
+
+fft_bin_size_freq = 20
+fft_size = sample_rate/fft_bin_size_freq
 
 # create a spectrogram object from our other file
 spectrogram_raw = RealtimeSpectrogram(
@@ -85,70 +87,70 @@ spectrogram_raw = RealtimeSpectrogram(
     title = "Raw Spectrogram"
 )
 
-spectrogram_corrected = RealtimeSpectrogram(
-    sample_freq = sample_rate,
-    samples_per_fft_slice = int(fft_size),
-    center_freq = center_freq,
-    title = "Corrected Spectrogram"
-)
+# spectrogram_corrected = RealtimeSpectrogram(
+#     sample_freq = sample_rate,
+#     samples_per_fft_slice = int(fft_size),
+#     center_freq = center_freq,
+#     title = "Corrected Spectrogram"
+# )
 
 max_points = int(5e4)
 
-# create a IQ scatter plot object from other file
-iq_plot_raw = IQPlot(
-    max_points = max_points,
-    title="Raw IQ Plot"
-)
+# # create a IQ scatter plot object from other file
+# iq_plot_raw = IQPlot(
+#     max_points = max_points,
+#     title="Raw IQ Plot"
+# )
 
-# create the magnitude/phase plots object from the other file
-mag_phase_plot_raw = MagPhasePlot(
-    sample_freq = sample_rate,
-    max_points = max_points,
-    title="Raw Mag-Phase Plot"
-)
+# # create the magnitude/phase plots object from the other file
+# mag_phase_plot_raw = MagPhasePlot(
+#     sample_freq = sample_rate,
+#     max_points = max_points,
+#     title="Raw Mag-Phase Plot"
+# )
 
-# create a IQ scatter plot object from other file
-iq_plot_corrected = IQPlot(
-    max_points = max_points,
-    title="Corrected IQ Plot"
-)
+# # create a IQ scatter plot object from other file
+# iq_plot_corrected = IQPlot(
+#     max_points = max_points,
+#     title="Corrected IQ Plot"
+# )
 
-# create the magnitude/phase plots object from the other file
-mag_phase_plot_corrected = MagPhasePlot(
-    sample_freq = sample_rate,
-    max_points = max_points,
-    title="Corrected Mag-Phase Plot"
-)
+# # create the magnitude/phase plots object from the other file
+# mag_phase_plot_corrected = MagPhasePlot(
+#     sample_freq = sample_rate,
+#     max_points = max_points,
+#     title="Corrected Mag-Phase Plot"
+# )
 
 def updateGraphs(buffer):
     # print(buffer)
             
     # update our raw plots
-    iq_plot_raw.update(buffer)
-    mag_phase_plot_raw.update(buffer)
+    # iq_plot_raw.update(buffer)
+    # mag_phase_plot_raw.update(buffer)
     spectrogram_raw.update(buffer)
     
     N = len(buffer)
             
     # determine coarse frequency correction offset from finding the max power sample in an FFT
-    buffer_fft = np.fft.fftshift(np.fft.fft(buffer))
-    frequencies = np.fft.fftshift(np.fft.fftfreq(N, 1/sample_rate))
-    peak_power_frequency_index = np.argmax(np.abs(buffer_fft))
-    coarse_frequency_offset = frequencies[peak_power_frequency_index]
+    # buffer_fft = np.fft.fftshift(np.fft.fft(buffer))
+    # frequencies = np.fft.fftshift(np.fft.fftfreq(N, 1/sample_rate))
+    # peak_power_frequency_index = np.argmax(np.abs(buffer_fft))
+    # coarse_frequency_offset = frequencies[peak_power_frequency_index]
     
-    print(coarse_frequency_offset)
-    # print(N)
+    # print(coarse_frequency_offset)
+    # # print(N)
     
-    # apply our coarse correction
-    # create time vector
-    t = np.arange(N)/int(sample_rate)
-    correction_sinusoid = np.exp(-1j * 2 * np.pi * coarse_frequency_offset *t)
-    buffer_corrected = buffer * correction_sinusoid
+    # # apply our coarse correction
+    # # create time vector
+    # t = np.arange(N)/int(sample_rate)
+    # correction_sinusoid = np.exp(-1j * 2 * np.pi * coarse_frequency_offset *t)
+    # buffer_corrected = buffer * correction_sinusoid
     
-    # update our corrected plots
-    iq_plot_corrected.update(buffer_corrected)
-    mag_phase_plot_corrected.update(buffer_corrected)
-    spectrogram_corrected.update(buffer_corrected)
+    # # update our corrected plots
+    # iq_plot_corrected.update(buffer_corrected)
+    # mag_phase_plot_corrected.update(buffer_corrected)
+    # spectrogram_corrected.update(buffer_corrected)
 
     # flush this buffer of samples to our file before grabbing a new buffer
 
@@ -158,7 +160,9 @@ current_buffer_num = 0 # which buffer of capture are we on?
 try:
     # iterate as long as we can
     while running and current_buffer_num < num_buffers:
-        num_buffers = num_buffers + 1
+        current_buffer_num = current_buffer_num + 1
+        
+        print(f'{round(100.0*current_buffer_num/num_buffers,2)}%',)
         
 ############################################################################## BUFFER ITERATOR #############################################################################################################################
         current_samples = 0
@@ -167,7 +171,7 @@ try:
         else:
             current_samples = all_samples[current_buffer_num*num_samps:(current_buffer_num+1)*num_samps]
             
-        print(current_samples)
+        # print(current_samples)
         
         # flush to file
         if plutoConnected:
@@ -178,8 +182,8 @@ try:
         # if any sample in the buffer is above our magnitude threshold, then let's record and display that buffer
         # if np.any(np.abs(current_samples) > signal_threshold):
             # capture = True
-            
-        updateGraphs(buffer=current_samples)
+        else:
+            updateGraphs(buffer=current_samples)
             
     
         
