@@ -62,6 +62,7 @@ else:
     filename = input("Please enter the path to a filename to playback: ")
     print(filename)
     all_samples = np.memmap(filename, dtype=np.complex64, mode='r', shape=(num_buffers*num_samps))
+    all_samples_normalized = all_samples/all_samples[np.argmax(abs(all_samples))]
 
 # create our actual file-backed numpy array
 
@@ -75,7 +76,6 @@ signal.signal(signal.SIGINT, handle_exit)
 
 
 ############################################################################## DISPLAY CONFIGURATION #######################################################################################################################################
-
 
 fft_bin_size_freq = 20 # Hz
 fft_size = sample_rate/fft_bin_size_freq
@@ -95,33 +95,34 @@ spectrogram_corrected = RealtimeSpectrogram(
     title = "Corrected Spectrogram"
 )
 
-max_points = int(5e4)
+max_points = int(5e3)
 
 # create a IQ scatter plot object from other file
-iq_plot_raw = IQPlot(
-    max_points = max_points,
-    title="Raw IQ Plot"
-)
-
-# # create the magnitude/phase plots object from the other file
-# mag_phase_plot_raw = MagPhasePlot(
-#     sample_freq = sample_rate,
+# iq_plot_raw = IQPlot(
 #     max_points = max_points,
-#     title="Raw Mag-Phase Plot"
+#     title="Raw IQ Plot"
 # )
 
-# create a IQ scatter plot object from other file
+# create the magnitude/phase plots object from the other file
+mag_phase_plot_raw = MagPhasePlot(
+    sample_freq = sample_rate,
+    max_points = max_points,
+    title="Raw Mag-Phase Plot"
+)
+
+# # create a IQ scatter plot object from other file
 iq_plot_corrected = IQPlot(
     max_points = max_points,
     title="Corrected IQ Plot"
 )
 
 # # create the magnitude/phase plots object from the other file
-# mag_phase_plot_corrected = MagPhasePlot(
-#     sample_freq = sample_rate,
-#     max_points = max_points,
-#     title="Corrected Mag-Phase Plot"
-# )
+mag_phase_plot_corrected = MagPhasePlot(
+    sample_freq = sample_rate,
+    max_points = max_points,
+    title="Corrected Mag-Phase Plot"
+)
+
 costas_phase = 0
 costas_freq = 0
 error_log= []
@@ -129,69 +130,44 @@ fig, axes = plt.subplots()
 def updateGraphs(buffer):
     # print(buffer)
     
-    # apply a bandpass filter to just the signal we care about
-    # and not all the harmonics from the 99c "LN"A
-    # this bandpass filter is implemented using a LPF
-    # since in complex sampling they're the same thing,
-    # and our IQ samples have Fc = 0, so a symmetrical LPF
-    # creates a BPF around Fc.
-    filter_bandwidth = 500e3 #Hz
-    filter = sig.firwin(1000, (filter_bandwidth/2 / (sample_rate/2)), pass_zero=True, window="hamming")
-    buffer_filtered = sig.lfilter(filter, 1.0, buffer)
-    # print(len(buffer_filtered))
-    spectrogram_raw.update(buffer_filtered)
-    filter_mask = np.abs(buffer_filtered) > 1e-2
-    
-    buffer_filtered = buffer_filtered[filter_mask]
-    spectrogram_corrected.update(buffer_filtered)
-    # print(len(buffer_filtered))
-    # print(filter_mask)
-    
-    # buffer_filtered_nonzero = buffer_filtered[]
-    # print(buffer_filtered)
-    
-    # update our raw plots
-    # iq_plot_raw.update(buffer)
-    # mag_phase_plot_raw.update(buffer)
-    # spectrogram_raw.update(buffer_filtered)
-    
-    N = len(buffer_filtered)   
+    N = len(buffer)
     
     # coarse frequency correction
     # we are trying to decode BPSK, 
     #   so we're going to square the signal to find the phase shift sinusoid
     # per: https://pysdr.org/content/sync.html#coarse-frequency-synchronization
-    buffer_squared= buffer_filtered**2 # square the buffer to remove the effects of modulation
+    buffer_squared= buffer**2 # square the buffer to remove the effects of modulation
     buffer_fft = np.fft.fftshift(np.abs(np.fft.fft(buffer_squared))) # fft our buffer
-    fft_freqs = np.linspace(-filter_bandwidth/2.0, filter_bandwidth/2.0, len(buffer_fft)) # create vector of frequencies
+    fft_freqs = np.linspace(-sample_rate/2.0, sample_rate/2.0, len(buffer_fft)) # create vector of frequencies
     coarse_freq_offset = fft_freqs[np.argmax(buffer_fft)] # find peak frequency
-    print(f"{round(coarse_freq_offset,3)} Hz offset")
+    # print(f"{round(coarse_freq_offset,3)} Hz offset")
     # plt.plot(f, psd)
     # plt.show()
     
     # apply coarse offset
     Ts = 1/sample_rate
-    t = np.arange(0, Ts*len(buffer_filtered), Ts) # creates time vector
-    buffer_coarse_correction = buffer_filtered * np.exp(-1j*2*np.pi*coarse_freq_offset*t/2.0)
+    t = np.arange(0, Ts*N, Ts) # creates time vector
+    buffer_coarse_correction = buffer * np.exp(-1j*2*np.pi*coarse_freq_offset*t/2.0)
     
     # iq_plot_raw.update(buffer_coarse_correction)
     # spectrogram_raw.update(buffer_coarse_correction)
+    mag_phase_plot_raw.update(buffer_coarse_correction)
     #########################################################################COSTAS LOOP############################################################################################################
     
     #making feedback loop slower or faster 
-    alpha=0.1
-    beta=0.1
+    alpha=0.01
+    beta=0.0001
     
     global costas_freq
     global costas_phase
     global error_log
     buffer_fine_correction=np.zeros(N,dtype=np.complex64)
     
-    for i in range(N):
-        buffer_fine_correction[i]=buffer_filtered[i]*np.exp(-1j*costas_phase) # derotates samples by phase offset the "mixer" stage of the costas loop
+    for i in range(len(buffer_fine_correction)):
+        buffer_fine_correction[i]=buffer[i]*np.exp(-1j*costas_phase) # derotates samples by phase offset the "mixer" stage of the costas loop
         error=np.real(buffer_fine_correction[i])*np.imag(buffer_fine_correction[i]) #Calculates the phase error by multiplying I*Q Ideal BPSK: Shift between phase of 0 degrees and 180 degrees error found if Q is not 0 error will always be + 
         costas_freq+=(beta*error)
-        error_log.append(costas_freq*sample_rate/(2*np.pi))
+        error_log.append(costas_freq*sample_rate*2/(2*np.pi))
         costas_phase += costas_freq+(alpha*error)
 
         while costas_phase >= 2*np.pi:
@@ -199,14 +175,15 @@ def updateGraphs(buffer):
         while costas_phase < 0:
             costas_phase+= 2*np.pi
     
-    # axes.clear()
-    # axes.plot(error_log)
+    axes.clear()
+    axes.plot(error_log)
+    print(costas_phase)
 
 
     # # update our corrected plots
-    # iq_plot_corrected.update(buffer_fine_correction)
-    # mag_phase_plot_corrected.update(buffer_corrected)
-    # spectrogram_corrected.update(buffer_corrected)
+    iq_plot_corrected.update(buffer_fine_correction)
+    mag_phase_plot_corrected.update(buffer_fine_correction)
+    spectrogram_raw.update(buffer_fine_correction)
 
     # flush this buffer of samples to our file before grabbing a new buffer
 
@@ -225,7 +202,7 @@ try:
         if plutoConnected:
             current_samples = sdr.rx() # get a single buffer of samples
         else:
-            current_samples = all_samples[current_buffer_num*num_samps:(current_buffer_num+1)*num_samps]
+            current_samples = all_samples_normalized[current_buffer_num*num_samps:(current_buffer_num+1)*num_samps]
             
         # print(current_samples)
         

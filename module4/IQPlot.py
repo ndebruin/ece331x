@@ -11,7 +11,7 @@ class IQPlot:
         # Create figure and axes
         self.fig, self.ax = plt.subplots()
         self.ax.set_title("IQ Plot")
-        lim = int(500)
+        lim = int(3)
         self.ax.set_xlim(-lim, lim)
         self.ax.set_ylim(-lim, lim)
         self.ax.set_xlabel("I")
