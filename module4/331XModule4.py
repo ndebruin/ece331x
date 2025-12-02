@@ -122,7 +122,8 @@ iq_plot_raw = IQPlot(
 #     max_points = max_points,
 #     title="Corrected Mag-Phase Plot"
 # )
-
+phase = 0 
+freq =  0
 def updateGraphs(buffer):
     # print(buffer)
     
@@ -148,7 +149,7 @@ def updateGraphs(buffer):
     #   so we're going to square the signal to find the phase shift sinusoid
     # per: https://pysdr.org/content/sync.html#coarse-frequency-synchronization
     buffer_squared= buffer_filtered**2 # square the buffer to remove the effects of modulation
-    buffer_fft = np.fft.fftshift(np.abs(np.fft.fft(buffer_filtered))) # fft our buffer
+    buffer_fft = np.fft.fftshift(np.abs(np.fft.fft(buffer_squared))) # fft our buffer
     fft_freqs = np.linspace(-filter_bandwidth/2.0, filter_bandwidth/2.0, len(buffer_fft)) # create vector of frequencies
     coarse_freq_offset = fft_freqs[np.argmax(buffer_fft)] # find peak frequency
     print(coarse_freq_offset) 
@@ -164,8 +165,8 @@ def updateGraphs(buffer):
     spectrogram_raw.update(buffer_coarse_correction)
     #########################################################################COSTAS LOOP############################################################################################################
     
-    phase=0
-    freq=0
+   
+   
     #making feedback loop slower or faster 
     alpha=0.0132
     beta=0.00932
@@ -173,16 +174,19 @@ def updateGraphs(buffer):
     output=np.zeros(N,dtype=np.complex64)
     error_log= []
     for i in range(N):
-        output[i]=buffer[i]*np.exp(-1j*phase) # derotates samples by phase offset the "mixer" stage of the costas loop
+        output[i]=buffer_coarse_correction[i]*np.exp(-1j*phase) # derotates samples by phase offset the "mixer" stage of the costas loop
         error=np.real(output[i])*np.imag(output[i]) #Calculates the phase error by multiplying I*Q Ideal BPSK: Shift between phase of 0 degrees and 180 degrees error found if Q is not 0 error will always be + 
         freq+=(beta*error)
-        error_log.append(freq*fs/(2*np.pi))
+        error_log.append(freq*sdr.sample_rate/(2*np.pi))
         phase += freq+(alpha*error)
 
         while phase >= 2*np.pi:
             phase -= 2*np.pi
         while phase < 0:
             phase+= 2*np.pi
+
+
+    symbols_corrected=output
             
 
 
