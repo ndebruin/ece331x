@@ -162,7 +162,32 @@ def updateGraphs(buffer):
     
     iq_plot_raw.update(buffer_coarse_correction)
     spectrogram_raw.update(buffer_coarse_correction)
+    #########################################################################COSTAS LOOP############################################################################################################
     
+    phase=0
+    freq=0
+    #making feedback loop slower or faster 
+    alpha=0.0132
+    beta=0.00932
+
+    output=np.zeros(N,dtype=np.complex64)
+    error_log= []
+    for i in range(N):
+        output[i]=buffer[i]*np.exp(-1j*phase) # derotates samples by phase offset the "mixer" stage of the costas loop
+        error=np.real(output[i])*np.imag(output[i]) #Calculates the phase error by multiplying I*Q Ideal BPSK: Shift between phase of 0 degrees and 180 degrees error found if Q is not 0 error will always be + 
+        freq+=(beta*error)
+        error_log.append(freq*fs/(2*np.pi))
+        phase += freq+(alpha*error)
+
+        while phase >= 2*np.pi:
+            phase -= 2*np.pi
+        while phase < 0:
+            phase+= 2*np.pi
+            
+
+
+
+
     # # update our corrected plots
     # iq_plot_corrected.update(buffer_corrected)
     # mag_phase_plot_corrected.update(buffer_corrected)
