@@ -10,6 +10,7 @@ from RealtimeSpectrogram import RealtimeSpectrogram
 from IQPlot import IQPlot
 from MagPhasePlot import MagPhasePlot
 from scipy import signal as sig
+from array import array
 
 ############################################################################## RADIO CONFIGURATION ###########################################################################################################
 
@@ -98,10 +99,10 @@ spectrogram_corrected = RealtimeSpectrogram(
 max_points = int(5e3)
 
 # create a IQ scatter plot object from other file
-# iq_plot_raw = IQPlot(
-#     max_points = max_points,
-#     title="Raw IQ Plot"
-# )
+iq_plot_raw = IQPlot(
+    max_points = max_points,
+    title="Raw IQ Plot"
+)
 
 # create the magnitude/phase plots object from the other file
 mag_phase_plot_raw = MagPhasePlot(
@@ -122,6 +123,11 @@ mag_phase_plot_corrected = MagPhasePlot(
     max_points = max_points,
     title="Corrected Mag-Phase Plot"
 )
+
+pos1 = array("i")
+pos0 = array("i")
+diff1 = []
+diff0 = []
 
 costas_phase = 0
 costas_freq = 0
@@ -149,8 +155,8 @@ def updateGraphs(buffer):
     t = np.arange(0, Ts*N, Ts) # creates time vector
     buffer_coarse_correction = buffer * np.exp(-1j*2*np.pi*coarse_freq_offset*t/2.0)
     
-    # iq_plot_raw.update(buffer_coarse_correction)
-    # spectrogram_raw.update(buffer_coarse_correction)
+    iq_plot_raw.update(buffer_coarse_correction)
+    spectrogram_raw.update(buffer_coarse_correction)
     mag_phase_plot_raw.update(buffer_coarse_correction)
     #########################################################################COSTAS LOOP############################################################################################################
     
@@ -177,13 +183,22 @@ def updateGraphs(buffer):
     
     axes.clear()
     axes.plot(error_log)
-    print(costas_phase)
-
+    # print(costas_phase)
+    for i in range(len(buffer_fine_correction)):
+        if(buffer_fine_correction[i]) > 0:
+            pos1.append(1)
+            pos0.append(0)
+        else:
+            pos1.append(0)
+            pos0.append(1)
+        
+        # if(buffer_coarse_correction[i] > 0 && )
+        
 
     # # update our corrected plots
     iq_plot_corrected.update(buffer_fine_correction)
     mag_phase_plot_corrected.update(buffer_fine_correction)
-    spectrogram_raw.update(buffer_fine_correction)
+    spectrogram_corrected.update(buffer_fine_correction)
 
     # flush this buffer of samples to our file before grabbing a new buffer
 
@@ -239,4 +254,7 @@ finally:
         all_samples.flush()
         sdr.rx_destroy_buffer() # clear SDR buffer
     del all_samples # safely closes file
+    # print(pos1)
+    np.savetxt("pos1.txt", pos1)
+    np.savetxt("pos0.txt", pos0)
     print("File Closed. Exiting...")
