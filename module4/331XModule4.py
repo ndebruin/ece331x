@@ -44,7 +44,7 @@ try:
 except:
     print("No Pluto found, playing back data")
     plutoConnected = False
-    
+
 
 
 
@@ -170,7 +170,7 @@ def updateGraphs(buffer):
     buffer_fine_correction=np.zeros(N,dtype=np.complex64)
     
     for i in range(len(buffer_fine_correction)):
-        buffer_fine_correction[i]=buffer[i]*np.exp(-1j*costas_phase) # derotates samples by phase offset the "mixer" stage of the costas loop
+        buffer_fine_correction[i]=buffer_coarse_correction[i]*np.exp(-1j*costas_phase) # derotates samples by phase offset the "mixer" stage of the costas loop
         error=np.real(buffer_fine_correction[i])*np.imag(buffer_fine_correction[i]) #Calculates the phase error by multiplying I*Q Ideal BPSK: Shift between phase of 0 degrees and 180 degrees error found if Q is not 0 error will always be + 
         costas_freq+=(beta*error)
         error_log.append(costas_freq*sample_rate*2/(2*np.pi))
