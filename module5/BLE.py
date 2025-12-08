@@ -24,17 +24,24 @@ def get_bit_stream(data_stream, downsample_ratio = 2):
     #############################################################
 	
 	# Step 1: Extract the phase of the signal and make it continous
-	
+	continuous_phase = np.unwrap(np.angle(data_stream))
+	mag = np.abs(data_stream)
 	
 	 # Step 2: Downsample the phase data to reduce complexity
 	downsampled_phase = continuous_phase[::downsample_ratio]
-	
-	
+	downsampled_mag = mag[::downsample_ratio]
+ 
+	mask = downsampled_mag > 1000 
+ 
 	
     # Step 3: Compute the phase difference (frequency changes)
-	
+	freq_data = np.diff(downsampled_phase, 1)
+ 
+	freq_data = freq_data*mask[:-1] # since mask is just 1/0 this works fine
 	
 	# Step 4: Plot the phase differential
+	ph.plotme(downsampled_mag, "Magnitude",False,False)
+	ph.plotme(freq_data,"Frequency Change of BLE Packet",False,False)
 	
 	
 	#############################################################
