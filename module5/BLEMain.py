@@ -12,7 +12,7 @@ ad_channels = {37:2402e6, 38:2426e6, 39:2480e6}
 channel = 38
 
 fc = ad_channels[channel]
-fs = 4e6
+fs = 1e7
 buff_size = 2**20
 
 print("sample rate: %s" % fs)

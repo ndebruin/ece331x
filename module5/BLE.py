@@ -31,7 +31,7 @@ def get_bit_stream(data_stream, downsample_ratio = 2):
 	downsampled_phase = continuous_phase[::downsample_ratio]
 	downsampled_mag = mag[::downsample_ratio]
  
-	mask = downsampled_mag > 1000 
+	mask = downsampled_mag > 500
  
 	
     # Step 3: Compute the phase difference (frequency changes)
@@ -40,7 +40,7 @@ def get_bit_stream(data_stream, downsample_ratio = 2):
 	freq_data = freq_data*mask[:-1] # since mask is just 1/0 this works fine
 	
 	# Step 4: Plot the phase differential
-	ph.plotme(downsampled_mag, "Magnitude",False,False)
+	# ph.plotme(downsampled_mag, "Magnitude",False,False)
 	ph.plotme(freq_data,"Frequency Change of BLE Packet",False,False)
 	
 	
@@ -281,6 +281,8 @@ def fix_CRC(packet_bits, CRC):
 def decode_ad_channel(data, dwnsmpl = 2, chan_num = 38):
 	
 	bits = get_bit_stream(data, downsample_ratio = dwnsmpl)
+ 
+	np.savetxt('bits.txt', bits, fmt='%s')
 
 	packet_start_locations = find_advertising_packets(bits)
 
