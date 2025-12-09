@@ -1,0 +1,334 @@
+sample rate: 10000000.0
+collection time: 0.1048576
+Found an advertising packet from 0x5882672ff98b on channel 38 at time 3.416ms!
+PDU type: SCAN_RSP
+Length: 6 bytes
+No Payload Chunks
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x464e27ebb9a3 on channel 38 at time 5.164ms!
+PDU type: ADV_IND
+Length: 28 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 2 bytes
+                Gap Code: Flags
+                Data: 0x18
+        Chunk 1:
+                Length: 3 bytes
+                Gap Code: Complete List of 16­bit Service Class UUIDs
+                Data: 0xbefe
+        Chunk 2:
+                Length: 14 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x3375110e31477b177f0b2683a
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x28de655a34e6 on channel 38 at time 9.812ms!
+PDU type: SCAN_REQ
+Length: 12 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 180 bytes
+                Gap Code: Class of Device
+                Data: 0xa289d448
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x28de655a34e6 on channel 38 at time 11.109ms!
+PDU type: SCAN_REQ
+Length: 12 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 136 bytes
+                Gap Code: 0xa9 Not In Lookup Table
+                Data: 0x490e0ed0
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x7386512e5c14 on channel 38 at time 15.57ms!
+PDU type: ADV_NONCONN_IND
+Length: 33 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 2 bytes
+                Gap Code: Flags
+                Data: 0x1a
+        Chunk 1:
+                Length: 23 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x4c000908136e0ada1c201b58160800bfafd6379683f9
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x10ca498af04e on channel 38 at time 16.506ms!
+PDU type: ADV_NONCONN_IND
+Length: 37 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 30 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x60001092022dae6139de54ddcc7b3e07b3e8781966e7fc83a46354792
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x28de655a3416 on channel 38 at time 20.696ms!
+PDU type: SCAN_REQ
+Length: 12 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 7 bytes
+                Gap Code: 0x77 Not In Lookup Table
+                Data: 0x7a8f6e5b
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x28de655a3416 on channel 38 at time 25.042ms!
+PDU type: SCAN_REQ
+Length: 12 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 188 bytes
+                Gap Code: 0xf9 Not In Lookup Table
+                Data: 0xa44a4049
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0xd404ee2f9bc on channel 38 at time 25.368ms!
+PDU type: SCAN_RSP
+Length: 6 bytes
+No Payload Chunks
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x68ebca956d19 on channel 38 at time 33.385ms!
+PDU type: ADV_SCAN_IND
+Length: 37 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 30 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x4c000719010a200300800703642b35feee33e00d8d4ef4bde7bc69860a
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x407d05771b1f on channel 38 at time 35.551ms!
+PDU type: ADV_SCAN_IND
+Length: 37 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 30 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x4c000719011720000180060904cafae5862e371491d7d0b75f7a7d8020
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x516910a2ced2 on channel 38 at time 40.095ms!
+PDU type: ADV_SCAN_IND
+Length: 37 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 30 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x4c0007190124202baa8f1404054a9bbc2e21db2401ca3de0392b983ac8
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x28de655a34b0 on channel 38 at time 40.621ms!
+PDU type: SCAN_REQ
+Length: 12 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 210 bytes
+                Gap Code: 0xce Not In Lookup Table
+                Data: 0xa2106951
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x6ca61070c188 on channel 38 at time 42.395ms!
+PDU type: ADV_IND
+Length: 37 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 2 bytes
+                Gap Code: Flags
+                Data: 0x1a
+        Chunk 1:
+                Length: 187 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x4e028c0e83ed5cd35b03786177a4534fffc91006411dc9675418
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x28de655a34b0 on channel 38 at time 46.062ms!
+PDU type: SCAN_REQ
+Length: 12 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 180 bytes
+                Gap Code: Class of Device
+                Data: 0xa289d448
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x28de655a34b0 on channel 38 at time 51.132ms!
+PDU type: SCAN_REQ
+Length: 12 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 136 bytes
+                Gap Code: 0xa9 Not In Lookup Table
+                Data: 0x490e0ed0
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x28de655a34b0 on channel 38 at time 53.885ms!
+PDU type: SCAN_REQ
+Length: 12 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 232 bytes
+                Gap Code: 0x74 Not In Lookup Table
+                Data: 0x9338ad43
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x9f95c125ac8 on channel 38 at time 64.366ms!
+PDU type: ADV_NONCONN_IND
+Length: 37 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 30 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x600010f20228ff0face5e09bb11c85a00241635e9b062bc3b8d69d0f8
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x3f89581e694f on channel 38 at time 65.544ms!
+PDU type: ADV_NONCONN_IND
+Length: 37 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 30 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x600010f202219498e8eb755466f7d436a3f97d6c379e50427681bda1a
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x43e16e990c79 on channel 38 at time 74.168ms!
+PDU type: ADV_NONCONN_IND
+Length: 33 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 2 bytes
+                Gap Code: Flags
+                Data: 0x1a
+        Chunk 1:
+                Length: 23 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x4c00090813750ada1e231b5816080032034ff5a1be70
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x28de655a3416 on channel 38 at time 76.379ms!
+PDU type: SCAN_REQ
+Length: 12 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 73 bytes
+                Gap Code: 0xda Not In Lookup Table
+                Data: 0x323e727e
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x8fd6a1d6851a on channel 38 at time 76.962ms!
+PDU type: ADV_NONCONN_IND
+Length: 37 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 27 bytes
+                Gap Code: 0xa5 Not In Lookup Table
+                Data: 0xaf427b4ecd60eb6222902ceff0c78dd257a13da766b075311148
+        Chunk 1:
+                Length: 150 bytes
+                Gap Code: 0x77 Not In Lookup Table
+                Data: 0xf8
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x7ca7e04dadbf on channel 38 at time 78.204ms!
+PDU type: ADV_IND
+Length: 23 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 2 bytes
+                Gap Code: Flags
+                Data: 0x1a
+        Chunk 1:
+                Length: 2 bytes
+                Gap Code: Tx Power Level
+                Data: 0xc
+        Chunk 2:
+                Length: 10 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x4c001005161cf9307e
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x28de655b3416 on channel 38 at time 78.617ms!
+PDU type: SCAN_REQ
+Length: 12 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 191 bytes
+                Gap Code: 0xad Not In Lookup Table
+                Data: 0x4de0a77c
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x7526c3ac77bb on channel 38 at time 79.105ms!
+PDU type: ADV_IND
+Length: 25 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 2 bytes
+                Gap Code: Flags
+                Data: 0x1a
+        Chunk 1:
+                Length: 12 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x4c0010073b1fd77db9ab08
+        Chunk 2:
+                Length: 2 bytes
+                Gap Code: Tx Power Level
+                Data: 0x0
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x9d5485928fe9 on channel 38 at time 79.422ms!
+PDU type: ADV_NONCONN_IND
+Length: 37 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 15 bytes
+                Gap Code: 0xfd Not In Lookup Table
+                Data: 0x67b7953e662ca6226f65a61f2e6
+        Chunk 1:
+                Length: 128 bytes
+                Gap Code: 0xd6 Not In Lookup Table
+                Data: 0x6fdd4571a75059255e76142434
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x40d3e86767bd on channel 38 at time 80.353ms!
+PDU type: ADV_IND
+Length: 23 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 2 bytes
+                Gap Code: 0xf1 Not In Lookup Table
+                Data: 0x2
+        Chunk 1:
+                Length: 63 bytes
+                Gap Code: 0x68 Not In Lookup Table
+                Data: 0x73a2cc0001f0661570c39922
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x407d053031b1 on channel 38 at time 81.206ms!
+PDU type: SCAN_RSP
+Length: 6 bytes
+No Payload Chunks
+And the CRC Trueed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x655a3406 on channel 38 at time 83.127ms!
+PDU type: SCAN_REQ
+Length: 4 bytes
+No Payload Chunks
+And the CRC Falseed!
+--------------------------------------------------------------------------------
+Found an advertising packet from 0x15e807508fb1 on channel 38 at time 101.406ms!
+PDU type: ADV_NONCONN_IND
+Length: 37 bytes
+Payload Chunks:
+        Chunk 0:
+                Length: 30 bytes
+                Gap Code: Manufacturer Specific Data
+                Data: 0x600010920226b234a9ecca09cafef8fe50e4bf6958138d70bf010a60e
+And the CRC Trueed!
+--------------------------------------------------------------------------------

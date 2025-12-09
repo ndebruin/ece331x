@@ -45,22 +45,22 @@ def get_bit_stream(data_stream, downsample_ratio = 2):
  
 	bits = np.greater(freq_data, 0)
 	
-	packet_start_locations = find_advertising_packets(bits)
+	# packet_start_locations = find_advertising_packets(bits)
  
-	ph.plotme(freq_data, "Frequency", False, False)
-	ph.plotme(bits, "Bits", False, False)
+	# ph.plotme(freq_data, "Frequency", False, False)
+	# ph.plotme(bits, "Bits", False, False)
  
-	print(len(packet_start_locations))
+	# print(len(packet_start_locations))
 	
  
-	ble_packet_freq = freq_data[packet_start_locations[0]-5:packet_start_locations[0]+400]
+	# ble_packet_freq = freq_data[packet_start_locations[0]-5:packet_start_locations[0]+400]
 	
  
-	ph.plotme(ble_packet_freq, "BLE Packet")
+	# ph.plotme(ble_packet_freq, "BLE Packet")
  
-	ble_preamble_freq = freq_data[packet_start_locations[0]-5:packet_start_locations[0]+12]
+	# ble_preamble_freq = freq_data[packet_start_locations[0]-5:packet_start_locations[0]+12]
 	
-	ph.plotme(ble_preamble_freq, "BLE Preamble")
+	# ph.plotme(ble_preamble_freq, "BLE Preamble")
 	#############################################################
     #############################################################
     #############################################################
@@ -93,7 +93,10 @@ def whiten_dynamic(bits, channel=38):
     #############################################################
     #############################################################
     #############################################################
-	exponents = [] # from core spec
+    
+	exponents = [0, 4, 7] # from core spec
+	# per page 3021 on the bluetooth spec: https://www.bluetooth.org/DocMan/handlers/DownloadDoc.ashx?doc_id=588232
+	
 	#############################################################
     #############################################################
     #############################################################
@@ -117,6 +120,8 @@ def whiten_dynamic(bits, channel=38):
     #############################################################
     #############################################################
 		# add bit to the output array
+		out_bit = state[-1]
+		out_array = np.append(out_array, out_bit)
 		
 	#############################################################
     #############################################################
@@ -309,15 +314,15 @@ def decode_ad_channel(data, dwnsmpl = 2, chan_num = 38):
  
 	
  
-	# packets = []
-	# for loc in packet_start_locations:
-		# AA_start = loc+40
-		# packet = bits[AA_start:AA_start+300*8] # packet must be shorter than this, at least for pre-5.0 packets
-		# packets = packets + [packet]
+	packets = []
+	for loc in packet_start_locations:
+		AA_start = loc+40
+		packet = bits[AA_start:AA_start+300*8] # packet must be shorter than this, at least for pre-5.0 packets
+		packets = packets + [packet]
+	
+	processed_packets = process_ad_packet_chunks(packets, chan_num)
 	# 
-	# processed_packets = process_ad_packet_chunks(packets, chan_num)
-	# 
-	# return {time:data for time, data in zip(packet_start_locations, processed_packets)}
+	return {time:data for time, data in zip(packet_start_locations, processed_packets)}
 
 
 #-----------------------------------------------------------------------------------------
