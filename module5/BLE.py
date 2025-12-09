@@ -40,16 +40,33 @@ def get_bit_stream(data_stream, downsample_ratio = 2):
 	freq_data = freq_data*mask[:-1] # since mask is just 1/0 this works fine
 	
 	# Step 4: Plot the phase differential
+	# ph.plotme(freq_data, "Frequency", False, False)
 	# ph.plotme(downsampled_mag, "Magnitude",False,False)
-	ph.plotme(freq_data,"Frequency Change of BLE Packet",False,False)
+ 
+	bits = np.greater(freq_data, 0)
 	
+	packet_start_locations = find_advertising_packets(bits)
+ 
+	ph.plotme(freq_data, "Frequency", False, False)
+	ph.plotme(bits, "Bits", False, False)
+ 
+	print(len(packet_start_locations))
 	
+ 
+	ble_packet_freq = freq_data[packet_start_locations[0]-5:packet_start_locations[0]+400]
+	
+ 
+	ph.plotme(ble_packet_freq, "BLE Packet")
+ 
+	ble_preamble_freq = freq_data[packet_start_locations[0]-5:packet_start_locations[0]+12]
+	
+	ph.plotme(ble_preamble_freq, "BLE Preamble")
 	#############################################################
     #############################################################
     #############################################################
     #############################################################
     
-	return np.greater(freq_data, 0)
+	return bits
 
 
 #-----------------------------------------------------------------------------------------
@@ -282,19 +299,25 @@ def decode_ad_channel(data, dwnsmpl = 2, chan_num = 38):
 	
 	bits = get_bit_stream(data, downsample_ratio = dwnsmpl)
  
-	np.savetxt('bits.txt', bits, fmt='%s')
+	# np.savetxt('bits.txt', bits, fmt='%s')
 
 	packet_start_locations = find_advertising_packets(bits)
 
-	packets = []
-	for loc in packet_start_locations:
-		AA_start = loc+40
-		packet = bits[AA_start:AA_start+300*8] # packet must be shorter than this, at least for pre-5.0 packets
-		packets = packets + [packet]
-
-	processed_packets = process_ad_packet_chunks(packets, chan_num)
+	# print(packet_start_locations)
+ 
 	
-	return {time:data for time, data in zip(packet_start_locations, processed_packets)}
+ 
+	
+ 
+	# packets = []
+	# for loc in packet_start_locations:
+		# AA_start = loc+40
+		# packet = bits[AA_start:AA_start+300*8] # packet must be shorter than this, at least for pre-5.0 packets
+		# packets = packets + [packet]
+	# 
+	# processed_packets = process_ad_packet_chunks(packets, chan_num)
+	# 
+	# return {time:data for time, data in zip(packet_start_locations, processed_packets)}
 
 
 #-----------------------------------------------------------------------------------------
